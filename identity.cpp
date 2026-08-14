@@ -2,11 +2,13 @@
 #include <esp_system.h>
 
 namespace WarSpider {
-namespace Identity {
 
-static String deviceId;
+Identity& Identity::instance() {
+    static Identity instance;
+    return instance;
+}
 
-void begin() {
+bool Identity::begin() {
     uint64_t mac = ESP.getEfuseMac();
 
     uint32_t shortId = (uint32_t)(mac & 0xFFFFFFFF);
@@ -21,11 +23,15 @@ void begin() {
     );
 
     deviceId = String(buffer);
+    status = deviceId.length() > 0 
+        ? SubsystemStatus::READY
+        : SubsystemStatus::FAILED;
+
+return status == SubsystemStatus::READY;
 }
 
-const String& getDeviceId() {
+const String& Identity::getDeviceId() const {
     return deviceId;
 }
 
-}
 }

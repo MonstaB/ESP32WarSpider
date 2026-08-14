@@ -2,20 +2,29 @@
 #define WARSPIDER_CONFIG_STORAGE_H
 
 #include <Arduino.h>
+#include "subsystem.h"
+#include <Preferences.h>
 
 namespace WarSpider {
-namespace ConfigStorage {
 
-bool begin();
+class ConfigStorage : public Subsystem {
+public:
+    static ConfigStorage& instance();
 
-bool saveSpiderName(const String& name);
-bool saveTeamId(const String& teamId);
+    bool begin() override;
 
-bool loadSpiderName(String& name);
-bool loadTeamId(String& teamId);
+    bool saveSpiderName(const String& name);
+    bool saveTeamId(const String& teamId);
 
+    bool loadSpiderName(String& name);
+    bool loadTeamId(String& teamId);
+
+private:
+    ConfigStorage() = default;
+
+    Preferences preferences;;
+};
 
 }
-}   
 
 #endif

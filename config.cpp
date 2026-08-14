@@ -2,54 +2,70 @@
 #include "config_storage.h"
 
 namespace WarSpider {
-namespace Config {
 
-static String spiderName;
-static String teamId;
-
-void begin() {
-    if (!ConfigStorage::loadSpiderName(spiderName)) {
-        spiderName = "SPIDER";
-        ConfigStorage::saveSpiderName(spiderName);
-    }
-
-    if (!ConfigStorage::loadTeamId(teamId)) {
-        teamId = "UNASSIGNED";
-        ConfigStorage::saveTeamId(teamId);
-    } 
+Config& Config::instance() {
+    static Config config;
+    return config;
 }
 
-const String& getSpiderName() {
+bool Config::begin() {
+    bool success = true;
+
+    if (!ConfigStorage::instance().loadSpiderName(spiderName)) {
+        spiderName = "SPIDER";
+
+        if (!ConfigStorage::instance().saveSpiderName(spiderName)) {
+            success = false;
+        }
+    }
+
+    if (!ConfigStorage::instance().loadTeamId(teamId)) {
+        teamId = "UNASSIGNED";
+
+        if (!ConfigStorage::instance().saveTeamId(teamId)) {
+            success = false;
+        }
+    }
+
+    status = success
+        ? SubsystemStatus::READY
+        : SubsystemStatus::FAILED;
+
+    return success;
+}
+
+const String& Config::getSpiderName() const {
     return spiderName;
 }
 
-const String& getTeamId() {
+const String& Config::getTeamId() const {
     return teamId;
 }
 
-bool setSpiderName(const String& newName) {
+bool Config::setSpiderName(const String& newName) {
     if (newName.length() == 0) {
-        return false; // Invalid name
+        return false;
     }
 
-    if (!ConfigStorage::saveSpiderName(newName)) {
-        return false; // Failed to save
+    if (!ConfigStorage::instance().saveSpiderName(newName)) {
+        return false;
     }
+
     spiderName = newName;
     return true;
 }
 
-bool setTeamId(const String& newTeamId) {
+bool Config::setTeamId(const String& newTeamId) {
     if (newTeamId.length() == 0) {
-        return false; // Invalid team ID
+        return false;
     }
 
-    if (!ConfigStorage::saveTeamId(newTeamId)) {
-        return false; // Failed to save
+    if (!ConfigStorage::instance().saveTeamId(newTeamId)) {
+        return false;
     }
+
     teamId = newTeamId;
     return true;
 }
 
-}
 }

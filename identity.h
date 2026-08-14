@@ -2,15 +2,22 @@
 #define WARSPIDER_IDENTITY_H
 
 #include <Arduino.h>
+#include "subsystem.h"
 
 namespace WarSpider {
-namespace Identity {
 
-void begin();
+class Identity : public Subsystem {
+public:
+    static Identity& instance();
 
-const String& getDeviceId();
+    bool begin() override;
+    const String& getDeviceId() const;
 
-}
+private:
+    Identity() = default;
+    String deviceId;
+};
+
 }
 
 #endif

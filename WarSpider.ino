@@ -8,9 +8,9 @@
 void setup() {
     M5Cardputer.begin();
     
-    WarSpider::Identity::begin();
-    WarSpider::ConfigStorage::begin();
-    WarSpider::Config::begin();
+    WarSpider::Identity::instance().begin();
+    WarSpider::ConfigStorage::instance().begin();
+    WarSpider::Config::instance().begin();
     WarSpider::System::begin();
     WarSpider::System::showReady();
 
