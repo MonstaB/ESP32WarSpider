@@ -11,6 +11,9 @@ void begin();
 const String& getSpiderName();
 const String& getTeamId();
 
+bool setSpiderName(const String& name);
+bool setTeamId(const String& teamId);
+
 }
 }
 
