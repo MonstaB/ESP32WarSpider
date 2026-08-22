@@ -24,8 +24,7 @@ bool GPS::begin() {
     rawData = "";
 
     // GPIO13 is the ESP32-S3 FSPIQ/IOMUX pin.
-    // Porkchop clears the IOMUX before using it as UART TX.
-    gpio_reset_pin(GPIO_NUM_13);
+        gpio_reset_pin(GPIO_NUM_13);
 
     // Proven Cap LoRa-1262 configuration.
     // GPS TX -> Cardputer GPIO15 (ESP32 RX)
