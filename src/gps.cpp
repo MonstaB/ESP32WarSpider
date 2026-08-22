@@ -24,7 +24,7 @@ bool GPS::begin() {
     rawData = "";
 
     // GPIO13 is the ESP32-S3 FSPIQ/IOMUX pin.
-        gpio_reset_pin(GPIO_NUM_13);
+    gpio_reset_pin(GPIO_NUM_13);
 
     // Proven Cap LoRa-1262 configuration.
     // GPS TX -> Cardputer GPIO15 (ESP32 RX)
@@ -60,7 +60,7 @@ void GPS::update() {
     if (parser.location.isValid()) {
         latitude = parser.location.lat();
         longitude = parser.location.lng();
-        fix = parser.location.isValid();
+        fix = true;
     }
 
     if (parser.altitude.isValid()) {
@@ -79,6 +79,35 @@ bool GPS::hasFix() const {
 
 bool GPS::hasData() const {
     return bytesReceived > 0;
+}
+
+bool GPS::hasDateTime() const {
+    return parser.date.isValid() &&
+           parser.time.isValid();
+}
+
+int GPS::getYear() {
+    return parser.date.year();
+}
+
+int GPS::getMonth() {
+    return parser.date.month();
+}
+
+int GPS::getDay() {
+    return parser.date.day();
+}
+
+int GPS::getHour() {
+    return parser.time.hour();
+}
+
+int GPS::getMinute() {
+    return parser.time.minute();
+}
+
+int GPS::getSecond() {
+    return parser.time.second();
 }
 
 double GPS::getLatitude() const {

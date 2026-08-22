@@ -1,5 +1,5 @@
 #include <M5Cardputer.h>
-
+#include "session.h"
 #include "version.h"
 #include "identity.h"
 #include "config_storage.h"
@@ -11,12 +11,15 @@
 
 namespace {
 
+bool sessionStarted = false;
+
 void drawPage1()
 {
     auto& identity = WarSpider::Identity::instance();
     auto& config = WarSpider::Config::instance();
     auto& cap = WarSpider::CapLoRa::instance();
     auto& gps = WarSpider::GPS::instance();
+    auto& session = WarSpider::Session::instance();
 
     M5Cardputer.Display.fillScreen(BLACK);
     M5Cardputer.Display.setTextSize(1);
@@ -61,6 +64,14 @@ void drawPage1()
 
     M5Cardputer.Display.print("RX: ");
     M5Cardputer.Display.println(gps.getBytesReceived());
+
+    M5Cardputer.Display.print("SES: ");
+
+    if (sessionStarted) {
+        M5Cardputer.Display.println(session.getSessionId());
+    } else {
+        M5Cardputer.Display.println("WAIT GPS TIME");
+    }
 
     M5Cardputer.Display.println();
     M5Cardputer.Display.println("PAGE 1 / 2");
@@ -119,16 +130,11 @@ void setup()
     const bool capOk =
         WarSpider::CapLoRa::instance().begin();
 
-    bool gpsOk = false;
-
     if (capOk) {
-        gpsOk =
-            WarSpider::GPS::instance().begin();
+        WarSpider::GPS::instance().begin();
     }
 
     WarSpider::System::begin();
-
-    (void)gpsOk;
 
     drawPage1();
 }
@@ -139,7 +145,16 @@ void loop()
     static uint32_t lastPageChange = 0;
     static uint8_t page = 0;
 
-    WarSpider::GPS::instance().update();
+    auto& gps = WarSpider::GPS::instance();
+
+    gps.update();
+
+    // Start the session only after GPS has supplied a valid date/time.
+    if (!sessionStarted && gps.hasDateTime()) {
+        if (WarSpider::Session::instance().start()) {
+            sessionStarted = true;
+        }
+    }
 
     const uint32_t now = millis();
 

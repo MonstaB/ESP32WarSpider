@@ -17,6 +17,16 @@ public:
     bool hasFix() const;
     bool hasData() const;
 
+    bool hasDateTime() const;
+    int getYear();
+    int getMonth();
+    int getDay();
+
+    int getHour();
+    int getMinute();
+    int getSecond();
+
+
     double getLatitude() const;
     double getLongitude() const;
     double getAltitude() const;
