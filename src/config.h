@@ -14,9 +14,11 @@ public:
 
     const String& getSpiderName() const;
     const String& getTeamId() const;
+    uint32_t getGpsUpdateInterval() const;
 
     bool setSpiderName(const String& name);
     bool setTeamId(const String& teamId);
+    bool setGpsUpdateInterval(uint32_t interval);
 
 private:
     Config() = default;

@@ -1,4 +1,5 @@
-build/
+.pio/
+.vscode/
 *.bin
 *.elf
 *.map

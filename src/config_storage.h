@@ -15,9 +15,11 @@ public:
 
     bool saveSpiderName(const String& name);
     bool saveTeamId(const String& teamId);
-
+    bool saveGpsUpdateInterval(uint32_t interval);
+    
     bool loadSpiderName(String& name);
     bool loadTeamId(String& teamId);
+    bool loadGpsUpdateInterval(uint32_t& interval);
 
 private:
     ConfigStorage() = default;

@@ -44,4 +44,17 @@ bool ConfigStorage::loadTeamId(String& teamId) {
     return true;
 }
 
+bool ConfigStorage::saveGpsUpdateInterval(uint32_t interval) {
+    return preferences.putUInt("gps_interval", interval) > 0;
+}
+
+bool ConfigStorage::loadGpsUpdateInterval(uint32_t& interval) {
+    if (!preferences.isKey("gps_interval")) {
+        return false;
+    }
+
+    interval = preferences.getUInt("gps_interval", 5);
+    return true;
+}
+
 }

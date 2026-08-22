@@ -4,6 +4,7 @@
 #include "identity.h"
 #include "config.h"
 #include "config_storage.h"
+#include "cap_lora.h"
 
 namespace WarSpider {
 namespace System {
@@ -40,7 +41,9 @@ void begin() {
     bool ready =
         Identity::instance().getStatus() == SubsystemStatus::READY &&
         ConfigStorage::instance().getStatus() == SubsystemStatus::READY &&
-        Config::instance().getStatus() == SubsystemStatus::READY;
+        Config::instance().getStatus() == SubsystemStatus::READY &&
+        CapLoRa::instance().getStatus() == SubsystemStatus::READY &&
+        GPS::instance().getStatus() == SubsystemStatus::READY;
 
     M5Cardputer.Display.println(ready ? "READY" : "ERROR");
 
@@ -51,24 +54,70 @@ void begin() {
     M5Cardputer.Display.setCursor(160, 101);
     M5Cardputer.Display.print("IDENTITY ");
     M5Cardputer.Display.println(
-        Identity::instance().getStatus() == SubsystemStatus::READY ? "OK" : "ERROR"
+        Identity::instance().getStatus() == SubsystemStatus::READY
+        ? "OK"
+        : "ERROR"
     );
 
     M5Cardputer.Display.setCursor(10, 114);
     M5Cardputer.Display.print("STORAGE       ");
     M5Cardputer.Display.println(
-        ConfigStorage::instance().getStatus() == SubsystemStatus::READY ? "OK" : "ERROR"
+        ConfigStorage::instance().getStatus() == SubsystemStatus::READY
+        ? "OK"
+        : "ERROR"
     );
 
     M5Cardputer.Display.setCursor(160, 114);
     M5Cardputer.Display.print("CONFIG ");
     M5Cardputer.Display.println(
-        Config::instance().getStatus() == SubsystemStatus::READY ? "OK" : "ERROR"
+        Config::instance().getStatus() == SubsystemStatus::READY
+        ? "OK"
+        : "ERROR"
     );
 }
 
 void showReady() {
 }
 
+void showStatus() {
+    M5Cardputer.Display.fillRect(180, 0, 135, 80, BLACK);
+
+    M5Cardputer.Display.setTextSize(1);
+
+    M5Cardputer.Display.setCursor(180, 5);
+    M5Cardputer.Display.println("GPS");
+
+    M5Cardputer.Display.setCursor(180, 18);
+    M5Cardputer.Display.println(
+        GPS::instance().getStatus() == SubsystemStatus::READY
+        ? "UART OK"
+        : "UART ERR"
+    );
+
+    M5Cardputer.Display.setCursor(180, 31);
+    M5Cardputer.Display.print("BYTES ");
+    M5Cardputer.Display.println(
+        GPS::instance().getBytesReceived()
+    );
+
+    M5Cardputer.Display.setCursor(180, 44);
+    M5Cardputer.Display.print(
+        GPS::instance().getRawData().substring(0, 15)
+    );
+
+    M5Cardputer.Display.setCursor(180, 57);
+    M5Cardputer.Display.print(
+        GPS::instance().getRawData().substring(15, 30)
+    );
+
+    M5Cardputer.Display.setCursor(180, 70);
+    M5Cardputer.Display.println(
+        CapLoRa::instance().getStatus() == SubsystemStatus::READY
+        ? "CAP OK"
+        : "CAP ERR"
+    );
+}
+
 }
 }
+

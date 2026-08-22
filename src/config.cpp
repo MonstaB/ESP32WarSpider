@@ -3,6 +3,8 @@
 
 namespace WarSpider {
 
+static uint32_t gpsUpdateInterval = 5;
+
 Config& Config::instance() {
     static Config config;
     return config;
@@ -27,6 +29,14 @@ bool Config::begin() {
         }
     }
 
+    if (!ConfigStorage::instance().loadGpsUpdateInterval(gpsUpdateInterval)) {
+        gpsUpdateInterval = 5;
+
+        if (!ConfigStorage::instance().saveGpsUpdateInterval(gpsUpdateInterval)) {
+            success = false;
+        }
+    }
+
     status = success
         ? SubsystemStatus::READY
         : SubsystemStatus::FAILED;
@@ -40,6 +50,10 @@ const String& Config::getSpiderName() const {
 
 const String& Config::getTeamId() const {
     return teamId;
+}
+
+uint32_t Config::getGpsUpdateInterval() const {
+    return gpsUpdateInterval;
 }
 
 bool Config::setSpiderName(const String& newName) {
@@ -65,6 +79,19 @@ bool Config::setTeamId(const String& newTeamId) {
     }
 
     teamId = newTeamId;
+    return true;
+}
+
+bool Config::setGpsUpdateInterval(uint32_t interval) {
+    if (interval == 0) {
+        return false;
+    }
+
+    if (!ConfigStorage::instance().saveGpsUpdateInterval(interval)) {
+        return false;
+    }
+
+    gpsUpdateInterval = interval;
     return true;
 }
 
