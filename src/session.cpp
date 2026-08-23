@@ -14,9 +14,9 @@ bool Session::begin() {
     startMillis = 0;
     sessionNumber = 0;
     active = false;
-    status = SubsystemStatus::READY;
+    status = SubsystemStatus::NOT_STARTED;
 
-    return start();
+    return true;
 }
 
 bool Session::start() {
@@ -24,31 +24,17 @@ bool Session::start() {
         return true;
     }
 
+    GPS& gps = GPS::instance();
+
+    // Do not create a session until GPS has supplied a valid date/time.
+    if (!gps.hasDateTime()) {
+        return false;
+    }
+
     const String& deviceId =
         Identity::instance().getDeviceId();
 
     sessionNumber++;
-
-    int year = 0;
-    int month = 0;
-    int day = 0;
-
-    GPS& gps = GPS::instance();
-
-    if (gps.hasDateTime()) {
-        year = gps.getYear();
-        month = gps.getMonth();
-        day = gps.getDay();
-    }
-
-    if (year < 2000 || month < 1 || month > 12 || day < 1 || day > 31) {
-        // GPS time is not available yet.
-        // Keep session creation working; the final persistent
-        // session/CSV timestamp will be finalized by storage later.
-        year = 2000;
-        month = 1;
-        day = 1;
-    }
 
     char id[64];
 
@@ -57,9 +43,9 @@ bool Session::start() {
         sizeof(id),
         "%s_%04d%02d%02d_%03u",
         deviceId.c_str(),
-        year,
-        month,
-        day,
+        gps.getYear(),
+        gps.getMonth(),
+        gps.getDay(),
         static_cast<unsigned>(sessionNumber)
     );
 

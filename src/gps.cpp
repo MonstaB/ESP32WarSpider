@@ -81,9 +81,48 @@ bool GPS::hasData() const {
     return bytesReceived > 0;
 }
 
-bool GPS::hasDateTime() const {
-    return parser.date.isValid() &&
-           parser.time.isValid();
+bool GPS::hasDateTime() {
+    if (!parser.date.isValid() || !parser.time.isValid()) {
+        return false;
+    }
+
+    if (parser.date.age() > 10000 || parser.time.age() > 10000) {
+        return false;
+    }
+
+    const int year = parser.date.year();
+    const int month = parser.date.month();
+    const int day = parser.date.day();
+
+    const int hour = parser.time.hour();
+    const int minute = parser.time.minute();
+    const int second = parser.time.second();
+
+    if (year < 2020 || year > 2099) {
+        return false;
+    }
+
+    if (month < 1 || month > 12) {
+        return false;
+    }
+
+    if (day < 1 || day > 31) {
+        return false;
+    }
+
+    if (hour < 0 || hour > 23) {
+        return false;
+    }
+
+    if (minute < 0 || minute > 59) {
+        return false;
+    }
+
+    if (second < 0 || second > 59) {
+        return false;
+    }
+
+    return true;
 }
 
 int GPS::getYear() {

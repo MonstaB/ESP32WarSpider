@@ -17,7 +17,7 @@ public:
     bool hasFix() const;
     bool hasData() const;
 
-    bool hasDateTime() const;
+    bool hasDateTime();
     int getYear();
     int getMonth();
     int getDay();
