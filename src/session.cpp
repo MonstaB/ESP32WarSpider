@@ -57,6 +57,20 @@ bool Session::start() {
     return true;
 }
 
+bool Session::close() {
+    if (!active) {
+        return false;
+    }
+
+    active = false;
+    sessionId = "";
+    startMillis = 0;
+
+    status = SubsystemStatus::READY;
+
+    return true;
+}
+
 bool Session::isActive() const {
     return active;
 }

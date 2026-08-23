@@ -14,8 +14,7 @@
 namespace {
 
 bool sessionStarted = false;
-WarSpider::Observation testObservation;
-bool observationCreated = false;
+
 
 void drawPage1()
 {
@@ -82,7 +81,13 @@ void drawPage1()
     if (sessionStarted) {
         M5Cardputer.Display.println(session.getSessionId());
     } else {
-        M5Cardputer.Display.println("WAIT GPS TIME");
+        M5Cardputer.Display.println("WAITING");
+    }
+
+    if (sessionStarted) {
+        M5Cardputer.Display.println("S=STOP");
+    } else {
+        M5Cardputer.Display.println("S=START");
     }
 
     M5Cardputer.Display.println();
@@ -127,12 +132,6 @@ void drawPage2()
     M5Cardputer.Display.println();
     M5Cardputer.Display.println("SD: /WarSpider/Wardriving");
 
-    if (observationCreated) {
-    M5Cardputer.Display.println();
-    M5Cardputer.Display.println("OBS: CREATED");
-    M5Cardputer.Display.println("TEST WIFI");
-}
-
     M5Cardputer.Display.println();
     M5Cardputer.Display.println("PAGE 2 / 2");
 }
@@ -171,40 +170,79 @@ void loop()
 
     gps.update();
 
-    // Start the session only after GPS has supplied a valid date/time.
-    if (!sessionStarted && gps.hasDateTime()) {
-        if (WarSpider::Session::instance().start()) {
-            sessionStarted = true;
+    M5Cardputer.update();
+
+    if (M5Cardputer.Keyboard.isChange() &&
+        M5Cardputer.Keyboard.isPressed()) {
+
+        Keyboard_Class::KeysState keys =
+            M5Cardputer.Keyboard.keysState();
+
+        for (auto key : keys.word) {
+
+            if (key == 's' || key == 'S') {
+
+                if (!sessionStarted) {
+
+                    if (!gps.hasDateTime()) {
+                        Serial.println(
+                            "Cannot start session: GPS time unavailable"
+                        );
+                        continue;
+                    }
+
+                    if (!WarSpider::Session::instance().start()) {
+                        Serial.println(
+                            "Session start failed"
+                        );
+                        continue;
+                    }
+
+                    if (!WarSpider::Storage::instance().createSessionFile(
+                            WarSpider::Session::instance().getSessionId(),
+                            WarSpider::Identity::instance().getDeviceId()
+                        )) {
+
+                        WarSpider::Session::instance().close();
+
+                        Serial.println(
+                            "Session CSV creation failed"
+                        );
+                        continue;
+                    }
+
+                    sessionStarted = true;
+
+                    Serial.println(
+                        "SESSION STARTED"
+                    );
+                }
+            }
+
+            if (key == 'x' || key == 'X') {
+
+                if (sessionStarted) {
+
+                    bool fileClosed =
+                        WarSpider::Storage::instance().closeSessionFile();
+
+                    bool sessionClosed =
+                        WarSpider::Session::instance().close();
+
+                    if (fileClosed && sessionClosed) {
+                        sessionStarted = false;
+                        Serial.println("SESSION CLOSED");
+                    } else {
+                        Serial.println("SESSION CLOSE ERROR");
+                    }
+                }
+            }
         }
     }
 
-    // Create one test observation in RAM after the session starts.
-    if (sessionStarted && !observationCreated) {
-        testObservation.mac = "AA:BB:CC:DD:EE:FF";
-        testObservation.ssid = "WARSPIDER-TEST";
-        testObservation.authMode = "[WPA2-PSK-CCMP][ESS]";
-        testObservation.firstSeen = "TEST";
+    
 
-        testObservation.channel = 6;
-        testObservation.frequency = 2437;
-        testObservation.rssi = -54;
 
-        testObservation.currentLatitude =
-            gps.getLatitude();
-
-        testObservation.currentLongitude =
-            gps.getLongitude();
-
-        testObservation.altitudeMeters =
-            gps.getAltitude();
-
-        testObservation.accuracyMeters = 0.0;
-        testObservation.rcois = "";
-        testObservation.mfgrId = "";
-        testObservation.type = "WIFI";
-
-        observationCreated = true;
-    }
 
     const uint32_t now = millis();
 

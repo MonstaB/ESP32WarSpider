@@ -13,7 +13,9 @@ public:
     bool begin() override;
 
     bool start();
+    bool close();
     bool isActive() const;
+    
 
     const String& getSessionId() const;
     uint32_t getStartMillis() const;

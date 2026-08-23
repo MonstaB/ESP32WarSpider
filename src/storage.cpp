@@ -1,4 +1,5 @@
 #include "storage.h"
+#include "version.h"
 
 namespace WarSpider {
 
@@ -24,6 +25,7 @@ Storage& Storage::instance() {
 bool Storage::begin() {
     status = SubsystemStatus::NOT_STARTED;
     sdAvailable = false;
+    sessionFilePath = "";
 
     pinMode(SD_CS_PIN, OUTPUT);
     digitalWrite(SD_CS_PIN, HIGH);
@@ -77,12 +79,84 @@ bool Storage::ensureDirectories() {
     return true;
 }
 
+bool Storage::createSessionFile(
+    const String& sessionId,
+    const String& deviceId
+) {
+    if (!sdAvailable || sessionId.length() == 0) {
+        return false;
+    }
+
+    if (sessionFile) {
+        sessionFile.close();
+    }
+
+    sessionFilePath =
+        String(SESSIONS_PATH) +
+        "/" +
+        sessionId +
+        ".csv";
+
+    sessionFile = SD.open(
+        sessionFilePath,
+        FILE_WRITE
+    );
+
+    if (!sessionFile) {
+        sessionFilePath = "";
+        return false;
+    }
+
+    sessionFile.println(
+        String("WigleWifi-1.6,") +
+        "appRelease=" + WAR_SPIDER_VERSION_STRING +
+        ",model=M5Cardputer" +
+        ",release=ESP32-S3" +
+        ",device=WARSPIDER" +
+        ",display=240x135" +
+        ",board=m5stack" +
+        ",brand=M5Stack" +
+        ",star=Sol" +
+        ",body=3" +
+        ",subBody=0"
+    );
+
+    sessionFile.println(
+        "MAC,SSID,AuthMode,FirstSeen,Channel,Frequency,RSSI,"
+        "CurrentLatitude,CurrentLongitude,AltitudeMeters,"
+        "AccuracyMeters,RCOIs,MfgrId,Type"
+    );
+
+    sessionFile.flush();
+
+    return true;
+}
+
+bool Storage::closeSessionFile() {
+    if (!sessionFile) {
+        return false;
+    }
+
+    sessionFile.flush();
+    sessionFile.close();
+
+    return true;
+}
+
+bool Storage::isSessionFileOpen() const {
+    return static_cast<bool>(sessionFile);
+}
+
 const char* Storage::getRootPath() const {
     return ROOT_PATH;
 }
 
 const char* Storage::getSessionsPath() const {
     return SESSIONS_PATH;
+}
+
+const String& Storage::getSessionFilePath() const {
+    return sessionFilePath;
 }
 
 }

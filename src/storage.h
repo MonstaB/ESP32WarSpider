@@ -17,13 +17,25 @@ public:
     bool isAvailable() const;
     bool ensureDirectories();
 
+    bool createSessionFile(
+        const String& sessionId,
+        const String& deviceId
+    );
+
+    bool closeSessionFile();
+
+    bool isSessionFileOpen() const;
+
     const char* getRootPath() const;
     const char* getSessionsPath() const;
+    const String& getSessionFilePath() const;
 
 private:
     Storage() = default;
 
     bool sdAvailable = false;
+    File sessionFile;
+    String sessionFilePath;
 };
 
 }
