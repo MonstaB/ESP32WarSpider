@@ -79,6 +79,78 @@ bool Storage::ensureDirectories() {
     return true;
 }
 
+uint16_t Storage::getNextSessionNumber(
+    const String& deviceId,
+    int year,
+    int month,
+    int day
+) const {
+    if (!sdAvailable) {
+        return 1;
+    }
+
+    char prefix[64];
+
+    snprintf(
+        prefix,
+        sizeof(prefix),
+        "%s_%04d%02d%02d_",
+        deviceId.c_str(),
+        year,
+        month,
+        day
+    );
+
+    uint16_t highest = 0;
+
+    File directory = SD.open(SESSIONS_PATH);
+
+    if (!directory || !directory.isDirectory()) {
+        return 1;
+    }
+
+    File file = directory.openNextFile();
+
+    while (file) {
+        if (!file.isDirectory()) {
+            String name = file.name();
+
+            if (name.startsWith(prefix) &&
+                name.endsWith(".csv")) {
+
+                int start =
+                    String(prefix).length();
+
+                int end =
+                    name.length() - 4;
+
+                String numberText =
+                    name.substring(start, end);
+
+                int number =
+                    numberText.toInt();
+
+                if (number > highest &&
+                    number <= 65535) {
+                    highest =
+                        static_cast<uint16_t>(number);
+                }
+            }
+        }
+
+        file.close();
+        file = directory.openNextFile();
+    }
+
+    directory.close();
+
+    if (highest >= 65535) {
+        return 65535;
+    }
+
+    return highest + 1;
+}
+
 bool Storage::createSessionFile(
     const String& sessionId,
     const String& deviceId

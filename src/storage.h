@@ -17,6 +17,13 @@ public:
     bool isAvailable() const;
     bool ensureDirectories();
 
+    uint16_t getNextSessionNumber(
+        const String& deviceId,
+        int year,
+        int month,
+        int day
+    ) const;
+
     bool createSessionFile(
         const String& sessionId,
         const String& deviceId

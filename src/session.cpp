@@ -1,6 +1,7 @@
 #include "session.h"
 #include "identity.h"
 #include "gps.h"
+#include "storage.h"
 
 namespace WarSpider {
 
@@ -34,7 +35,13 @@ bool Session::start() {
     const String& deviceId =
         Identity::instance().getDeviceId();
 
-    sessionNumber++;
+    sessionNumber =
+        Storage::instance().getNextSessionNumber(
+            deviceId,
+            gps.getYear(),
+            gps.getMonth(),
+            gps.getDay()
+        );
 
     char id[64];
 
