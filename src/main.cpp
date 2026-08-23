@@ -8,10 +8,13 @@
 #include "gps.h"
 #include "system.h"
 #include "subsystem.h"
+#include "observation.h"
 
 namespace {
 
 bool sessionStarted = false;
+WarSpider::Observation testObservation;
+bool observationCreated = false;
 
 void drawPage1()
 {
@@ -112,6 +115,12 @@ void drawPage2()
     M5Cardputer.Display.print("RX: ");
     M5Cardputer.Display.println(gps.getBytesReceived());
 
+    if (observationCreated) {
+    M5Cardputer.Display.println();
+    M5Cardputer.Display.println("OBS: CREATED");
+    M5Cardputer.Display.println("TEST WIFI");
+}
+
     M5Cardputer.Display.println();
     M5Cardputer.Display.println("PAGE 2 / 2");
 }
@@ -154,6 +163,34 @@ void loop()
         if (WarSpider::Session::instance().start()) {
             sessionStarted = true;
         }
+    }
+
+    // Create one test observation in RAM after the session starts.
+    if (sessionStarted && !observationCreated) {
+        testObservation.mac = "AA:BB:CC:DD:EE:FF";
+        testObservation.ssid = "WARSPIDER-TEST";
+        testObservation.authMode = "[WPA2-PSK-CCMP][ESS]";
+        testObservation.firstSeen = "TEST";
+
+        testObservation.channel = 6;
+        testObservation.frequency = 2437;
+        testObservation.rssi = -54;
+
+        testObservation.currentLatitude =
+            gps.getLatitude();
+
+        testObservation.currentLongitude =
+            gps.getLongitude();
+
+        testObservation.altitudeMeters =
+            gps.getAltitude();
+
+        testObservation.accuracyMeters = 0.0;
+        testObservation.rcois = "";
+        testObservation.mfgrId = "";
+        testObservation.type = "WIFI";
+
+        observationCreated = true;
     }
 
     const uint32_t now = millis();
