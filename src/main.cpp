@@ -9,6 +9,7 @@
 #include "system.h"
 #include "subsystem.h"
 #include "observation.h"
+#include "storage.h"
 
 namespace {
 
@@ -23,6 +24,7 @@ void drawPage1()
     auto& cap = WarSpider::CapLoRa::instance();
     auto& gps = WarSpider::GPS::instance();
     auto& session = WarSpider::Session::instance();
+    auto& storage = WarSpider::Storage::instance();
 
     M5Cardputer.Display.fillScreen(BLACK);
     M5Cardputer.Display.setTextSize(1);
@@ -55,6 +57,13 @@ void drawPage1()
     M5Cardputer.Display.print("GPS: ");
     M5Cardputer.Display.println(
         gps.getStatus() == WarSpider::SubsystemStatus::READY
+            ? "OK"
+            : "ERR"
+    );
+
+    M5Cardputer.Display.print("SD:  ");
+    M5Cardputer.Display.println(
+        storage.getStatus() == WarSpider::SubsystemStatus::READY
             ? "OK"
             : "ERR"
     );
@@ -115,6 +124,9 @@ void drawPage2()
     M5Cardputer.Display.print("RX: ");
     M5Cardputer.Display.println(gps.getBytesReceived());
 
+    M5Cardputer.Display.println();
+    M5Cardputer.Display.println("SD: /WarSpider/Wardriving");
+
     if (observationCreated) {
     M5Cardputer.Display.println();
     M5Cardputer.Display.println("OBS: CREATED");
@@ -144,6 +156,7 @@ void setup()
     }
 
     WarSpider::System::begin();
+    WarSpider::Storage::instance().begin();
 
     drawPage1();
 }
