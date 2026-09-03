@@ -8,11 +8,15 @@ v0.0.6  ✅  PlatformIO migration + Cap LoRa + working GPS
 
 v0.0.7  ✅  Session object + session ID + session creation/start + GPS session timestamp
 
-v0.0.8      Observation data structure
+v0.0.8   ✅   Observation data structure
 
-v0.0.9      Create observation in RAM
+v0.0.9   ✅   Create observation in RAM
 
-v0.0.10     SD storage foundation
+v0.0.10  ✅   SD storage foundation
+
+New v 0.0.1 1✅ write manual sessions and WiGLE CSV
+
+
 
 v0.0.11     Write one observation to CSV
 
@@ -72,6 +76,7 @@ Basic session UI
 
 Clean shutdown/session close
 
-     session produces a usable self-contained CSV on SD from v0.1.0.
+session produces a usable self-contained CSV on SD from v0.1.0.
+Automatic uploading remains outside v0.1.0; manua
 
-Automatic uploading remains outside v0.1.0; manual removal/upload of the CSV is supported from the first field-capable release.
+l removal/upload of the CSV is supported from the first field-capable release.

@@ -15,6 +15,26 @@ namespace {
 
 bool sessionStarted = false;
 
+String getGpsTimestamp()
+{
+    auto& gps = WarSpider::GPS::instance();
+
+    char timestamp[32];
+
+    snprintf(
+        timestamp,
+        sizeof(timestamp),
+        "%04d-%02d-%02d %02d:%02d:%02d",
+        gps.getYear(),
+        gps.getMonth(),
+        gps.getDay(),
+        gps.getHour(),
+        gps.getMinute(),
+        gps.getSecond()
+    );
+
+    return String(timestamp);
+}
 
 void drawPage1()
 {
@@ -215,6 +235,65 @@ void loop()
 
                     Serial.println(
                         "SESSION STARTED"
+                    );
+                }
+            }
+            
+            if (key == 'o' || key == 'O') {
+
+                if (!sessionStarted) {
+                    Serial.println(
+                        "Cannot write observation: no active session"
+                    );
+                    continue;
+                }
+
+                auto& gps = WarSpider::GPS::instance();
+
+                WarSpider::Observation observation;
+
+                observation.mac =
+                    "AA:BB:CC:DD:EE:FF";
+
+                observation.ssid =
+                    "WARSPIDER-TEST";
+
+                observation.authMode =
+                    "[WPA2-PSK-CCMP][ESS]";
+
+                observation.firstSeen =
+                    getGpsTimestamp();
+
+                observation.channel = 6;
+                observation.frequency = 2437;
+                observation.rssi = -54;
+
+                observation.currentLatitude =
+                    gps.getLatitude();
+
+                observation.currentLongitude =
+                    gps.getLongitude();
+
+                observation.altitudeMeters =
+                    gps.getAltitude();
+
+                observation.accuracyMeters = 0.0;
+
+                observation.rcois = "";
+                observation.mfgrId = "";
+                observation.type = "WIFI";
+
+                if (WarSpider::Storage::instance().writeObservation(
+                        observation
+                    )) {
+
+                    Serial.println(
+                        "OBSERVATION WRITTEN"
+                    );
+                } else {
+
+                    Serial.println(
+                        "OBSERVATION WRITE FAILED"
                     );
                 }
             }

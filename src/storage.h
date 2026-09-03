@@ -5,6 +5,7 @@
 #include <SD.h>
 #include <SPI.h>
 #include "subsystem.h"
+#include "observation.h"
 
 namespace WarSpider {
 
@@ -16,6 +17,7 @@ public:
 
     bool isAvailable() const;
     bool ensureDirectories();
+    bool writeObservation(const Observation& observation);
 
     uint16_t getNextSessionNumber(
         const String& deviceId,
@@ -28,6 +30,7 @@ public:
         const String& sessionId,
         const String& deviceId
     );
+    
 
     bool closeSessionFile();
 

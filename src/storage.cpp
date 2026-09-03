@@ -204,6 +204,50 @@ bool Storage::createSessionFile(
     return true;
 }
 
+bool Storage::writeObservation(
+    const Observation& observation
+) {
+    if (!sessionFile) {
+        return false;
+    }
+
+    if (!observation.isValid()) {
+        return false;
+    }
+
+    sessionFile.print(observation.mac);
+    sessionFile.print(",");
+    sessionFile.print(observation.ssid);
+    sessionFile.print(",");
+    sessionFile.print(observation.authMode);
+    sessionFile.print(",");
+    sessionFile.print(observation.firstSeen);
+    sessionFile.print(",");
+    sessionFile.print(observation.channel);
+    sessionFile.print(",");
+    sessionFile.print(observation.frequency);
+    sessionFile.print(",");
+    sessionFile.print(observation.rssi);
+    sessionFile.print(",");
+    sessionFile.print(observation.currentLatitude, 6);
+    sessionFile.print(",");
+    sessionFile.print(observation.currentLongitude, 6);
+    sessionFile.print(",");
+    sessionFile.print(observation.altitudeMeters, 1);
+    sessionFile.print(",");
+    sessionFile.print(observation.accuracyMeters, 1);
+    sessionFile.print(",");
+    sessionFile.print(observation.rcois);
+    sessionFile.print(",");
+    sessionFile.print(observation.mfgrId);
+    sessionFile.print(",");
+    sessionFile.println(observation.type);
+
+    sessionFile.flush();
+
+    return true;
+}
+
 bool Storage::closeSessionFile() {
     if (!sessionFile) {
         return false;
