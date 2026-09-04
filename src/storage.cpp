@@ -248,6 +248,36 @@ bool Storage::writeObservation(
     return true;
 }
 
+bool Storage::readSessionFile() {
+    if (!sdAvailable || sessionFilePath.length() == 0) {
+        return false;
+    }
+
+    if (sessionFile) {
+        return false;
+    }
+
+    File file = SD.open(sessionFilePath, FILE_READ);
+
+    if (!file) {
+        return false;
+    }
+
+    Serial.println();
+    Serial.println("----- SESSION CSV -----");
+
+    while (file.available()) {
+        Serial.write(file.read());
+    }
+
+    Serial.println();
+    Serial.println("----- END CSV -----");
+
+    file.close();
+
+    return true;
+}
+
 bool Storage::closeSessionFile() {
     if (!sessionFile) {
         return false;

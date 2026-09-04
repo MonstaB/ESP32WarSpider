@@ -18,6 +18,7 @@ public:
     bool isAvailable() const;
     bool ensureDirectories();
     bool writeObservation(const Observation& observation);
+    bool readSessionFile();
 
     uint16_t getNextSessionNumber(
         const String& deviceId,
@@ -30,7 +31,7 @@ public:
         const String& sessionId,
         const String& deviceId
     );
-    
+
 
     bool closeSessionFile();
 

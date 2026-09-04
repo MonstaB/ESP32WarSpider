@@ -305,10 +305,17 @@ void loop()
                     bool fileClosed =
                         WarSpider::Storage::instance().closeSessionFile();
 
+                    bool fileRead = false;
+
+                    if (fileClosed) {
+                        fileRead =
+                            WarSpider::Storage::instance().readSessionFile();
+                    }
+
                     bool sessionClosed =
                         WarSpider::Session::instance().close();
 
-                    if (fileClosed && sessionClosed) {
+                    if (fileClosed && fileRead && sessionClosed) {
                         sessionStarted = false;
                         Serial.println("SESSION CLOSED");
                     } else {
@@ -335,7 +342,7 @@ void loop()
         }
     }
 
-    if (now - lastPageChange >= 5000) {
+    if (now - lastPageChange >= 15000) {
         lastPageChange = now;
         page = (page == 0) ? 1 : 0;
     }
