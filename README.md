@@ -18,11 +18,11 @@ New v 0.0.11✅ write manual sessions and WiGLE CSV
 
 v0.0.12   ✅  Write one observation to CSV
 
-v0.0.13     Read session CSV / verify stored observations
+v0.0.13   ✅ Read session CSV / verify stored observations
 
-v0.0.14     Session + observations persisted together
+v0.0.14   ✅ Session + observations persisted together
 
-v0.0.15     Wi-Fi observation subsystem skeleton
+v0.0.15   ✅ Wi-Fi observation subsystem skeleton
 
 v0.0.16     Capture real Wi-Fi observations
 

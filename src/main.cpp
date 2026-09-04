@@ -10,6 +10,7 @@
 #include "subsystem.h"
 #include "observation.h"
 #include "storage.h"
+#include "wifi.h"
 
 namespace {
 
@@ -176,6 +177,8 @@ void setup()
 
     WarSpider::System::begin();
     WarSpider::Storage::instance().begin();
+    WarSpider::Storage::instance().begin();
+    WarSpider::WiFi::instance().begin();
 
     drawPage1();
 }
@@ -189,6 +192,7 @@ void loop()
     auto& gps = WarSpider::GPS::instance();
 
     gps.update();
+    WarSpider::WiFi::instance().update();
 
     M5Cardputer.update();
 
